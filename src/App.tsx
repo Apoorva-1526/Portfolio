@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, useMotionValue, useMotionTemplate } from 'framer-motion';
 import { Github, Linkedin, Mail, ExternalLink, Code2, Database, Layout, Server, ChevronDown } from 'lucide-react';
 import { RESUME_DATA } from './data';
 
@@ -22,8 +22,40 @@ function App() {
     restDelta: 0.001
   });
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+
   return (
     <>
+      <motion.div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+          pointerEvents: "none",
+          background: useMotionTemplate`radial-gradient(800px circle at ${smoothX}px ${smoothY}px, rgba(37, 99, 235, 0.15), transparent 80%)`
+        }}
+      />
+      {/* Background Animations */}
+      <div className="bg-shape shape-1" />
+      <div className="bg-shape shape-2" />
+      <div className="bg-shape shape-3" />
+
       <motion.div
         style={{
           scaleX,
